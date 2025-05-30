@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ProShop - Your Online Store</title>
+<style>
+  /* Reset & base */
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #0f1821;
+    color: #b0bec5;
+  }
+  a {
+    color: #14b8a6;
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+
+  /* Navbar */
+  nav {
+    background-color: #142c34;
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+  nav .logo {
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: #14b8a6;
+    letter-spacing: 2px;
+  }
+  nav ul {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+  }
+  nav li {
+    cursor: pointer;
+  }
+  nav a.nav-link {
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+  }
+  nav a.nav-link.active,
+  nav a.nav-link:hover {
+    background-color: #14b8a6;
+    color: #0f1821;
+  }
+  #cartBtn {
+    background-color: #14b8a6;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    color: #0f1821;
+    position: relative;
+  }
+  #cartCount {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #ef4444;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 50%;
+    padding: 2px 6px;
+  }
+
+  /* Main content sections */
+  main > section {
+    display: none;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto 4rem;
+  }
+  main > section.active {
+    display: block;
+  }
+
+  /* Home hero */
+  .hero {
+    background: linear-gradient(135deg, #14b8a6 0%, #0f1821 100%);
+    color: #0f1821;
+    border-radius: 12px;
+    padding: 4rem 2rem;
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  .hero h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+  .hero p {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    color: #d1d5db;
+  }
+  .hero .button {
+    background-color: #0f1821;
+    color: #14b8a6;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  .hero .button:hover {
+    background-color: #0e7e75;
+  }
+
+  /* Products grid */
+  #productList {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(230px,1fr));
+    gap: 1.5rem;
+  }
+  .product {
+    background-color: #142c34;
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    box-shadow: 0 2px 6px rgb(20 184 166 / 0.3);
+    transition: transform 0.3s ease;
+  }
+  .product:hover {
+    transform: translateY(-5px);
+  }
+  .product img {
+    width: 100%;
+    height: 150px;
+    object-fit: contain;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+  .product h3 {
+    margin: 0 0 0.5rem;
+    color: #14b8a6;
+  }
+  .product p {
+    margin: 0 0 1rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+  .product button {
+    background-color: #14b8a6;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    color: #0f1821;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  .product button:hover {
+    background-color: #0e7e75;
+  }
+
+  /* Contact form */
+  #contactForm {
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  #contactForm label {
+    font-weight: 600;
+  }
+  #contactForm input,
+  #contactForm textarea {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #333;
+    background-color: #0f1821;
+    color: #14b8a6;
+    font-size: 1rem;
+  }
+  #contactForm input:focus,
+  #contactForm textarea:focus {
+    outline: 2px solid #14b8a6;
+    background-color: #142c34;
+  }
+  #contactForm button {
+    background-color: #14b8a6;
+    border: none;
+    padding: 12px 0;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    color: #0f1821;
+    font-size: 1.1rem;
+    transition: background-color 0.3s ease;
+  }
+  #contactForm button:hover {
+    background-color: #0e7e75;
+  }
+
+  /* Modal base styles */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+  }
+  .modal-content {
+    background-color: #142c34;
+    padding: 2rem;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 450px;
+    color: #b0bec5;
+    position: relative;
+    box-shadow: 0 4px 12px rgb(20 184 166 / 0.5);
+  }
+  .modal-content h2 {
+    margin-top: 0;
+    color: #14b8a6;
+    text-align: center;
+  }
+  .modal-content .close {
+    position: absolute;
+    top: 12px; right: 16px;
+    font-size: 28px;
+    font-weight: 700;
+    cursor: pointer;
+    color: #b0bec5;
+    transition: color 0.3s ease;
+  }
+  .modal-content .close:hover {
+    color: #ef4444;
+  }
+
+  /* Cart modal */
+  #cartItems {
+    list-style: none;
+    padding-left: 0;
+    max-height: 250px;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+  }
+  #cartItems li {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 6px;
+    border-bottom: 1px solid #0f1821;
+  }
+  #cartItems li button {
+    background-color: #ef4444;
+    border: none;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 2px 8px;
+    transition: background-color 0.3s ease;
+  }
+  #cartItems li button:hover {
+    background-color: #c53030;
+  }
+  #cartTotal {
+    font-weight: 700;
+    text-align: right;
+    margin-bottom: 1rem;
+    color: #14b8a6;
+  }
+  #checkoutBtn {
+    background-color: #14b8a6;
+    border: none;
+    width: 100%;
+    padding: 12px 0;
+    font-weight: 700;
+    color: #0f1821;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  #checkoutBtn:hover {
+    background-color: #0e7e75;
+  }
+
+  /* Checkout form modal (same styling as contact) */
+  #checkoutForm label {
+    display: block;
+    margin: 12px 0 4px;
+    font-weight: 600;
+  }
+  #checkoutForm input,
+  #checkoutForm textarea {
+    width: 100%;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #333;
+    background-color: #0f1821;
+    color: #14b8a6;
+  }
+  #checkoutForm input:focus,
+  #checkoutForm textarea:focus {
+    outline: 2px solid #14b8a6;
+    background-color: #142c34;
+  }
+  #checkoutForm button {
+    margin-top: 16px;
+    width: 100%;
+    background-color: #14b8a6;
+    color: #0f1821;
+    font-weight: 700;
+    border-radius: 8px;
+    border: none;
+    padding: 12px 0;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  #checkoutForm button:hover {
+    background-color: #0e7e75;
+  }
+
+  /* Responsive tweaks */
+  @media (max-width: 600px) {
+    nav ul {
+      gap: 1rem;
+    }
+    .hero h1 {
+      font-size: 2.25rem;
+    }
+    .hero p {
+      font-size: 1rem;
+    }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">ProShop</div>
+  <ul>
+    <li><a href="#" class="nav-link active" data-section="home">Home</a></li>
+    <li><a href="#" class="nav-link" data-section="products">Products</a></li>
+    <li><a href="#" class="nav-link" data-section="contact">Contact</a></li>
+  </ul>
+  <button id="cartBtn">Cart 🛒 <span id="cartCount">0</span></button>
+</nav>
+
+<main>
+  <section id="home" class="active">
+    <div class="hero">
+      <h1>Welcome to ProShop</h1>
+      <p>Your one-stop online store for quality products at the best prices.</p>
+      <button class="button" data-section="products">Shop Now</button>
+    </div>
+  </section>
+
+  <section id="products">
+    <h2>Our Products</h2>
+    <div id="productList"></div>
+  </section>
+
+  <section id="contact">
+    <h2>Contact Us</h2>
+    <form id="contactForm" autocomplete="off">
+      <label for="contactName">Name</label>
+      <input type="text" id="contactName" required />
+      <label for="contactEmail">Email</label>
+      <input type="email" id="contactEmail" required />
+      <label for="contactMessage">Message</label>
+      <textarea id="contactMessage" rows="5" required></textarea>
+      <button type="submit">Send Message</button>
+    </form>
+  </section>
+</main>
+
+<!-- Cart Modal -->
+<div id="cartModal" class="modal">
+  <div class="modal-content">
+    <span class="close" title="Close">&times;</span>
+    <h2>Your Cart</h2>
+    <ul id="cartItems"></ul>
+    <p id="cartTotal"></p>
+    <button id="checkoutBtn">Proceed to Checkout</button>
+  </div>
+</div>
+
+<!-- Checkout Modal -->
+<div id="checkoutModal" class="modal">
+  <div class="modal-content">
+    <span class="close" title="Close">&times;</span>
+    <h2>Checkout</h2>
+    <form id="checkoutForm" autocomplete="off">
+      <label for="custName">Full Name:</label>
+      <input type="text" id="custName" name="custName" required />
+
+      <label for="custEmail">Email:</label>
+      <input type="email" id="custEmail" name="custEmail" required />
+
+      <label for="custPhone">Phone Number:</label>
+      <input type="tel" id="custPhone" name="custPhone" required pattern="[0-9]{10,15}" placeholder="Digits only" />
+
+      <label for="custAddress">Address:</label>
+      <textarea id="custAddress" name="custAddress" rows="3" required></textarea>
+
+      <label for="custCity">City:</label>
+      <input type="text" id="custCity" name="custCity" required />
+
+      <label for="custState">State/Province:</label>
+      <input type="text" id="custState" name="custState" required />
+
+      <label for="custZip">ZIP/Postal Code:</label>
+      <input type="text" id="custZip" name="custZip" required />
+
+      <button type="submit">Place Order</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Product data with images from unsplash (public domain style placeholders)
+  const products = [
+    {id: 1, name: "Wireless Headphones", price: 75, image: "img/headphone.jpg"},
+    {id: 2, name: "Smartwatch", price: 120, image: "img/smartwatch.jpg"},
+    {id: 3, name: "Gaming Mouse", price: 45, image: "img/gamingmouse.jpg"},
+    {id: 4, name: "Mechanical Keyboard", price: 90, image: "img/mechanicalkey.jpg"},
+    {id: 5, name: "Bluetooth Speaker", price: 60, image: "img/bluetooth.jpg"},
+    {id: 6, name: "4K Monitor", price: 300, image: "img/4monitor.jpg"},
+    {id: 7, name: "External SSD 1TB", price: 150, image: "img/ssd1tb.jpg"},
+    {id: 8, name: "Fitness Tracker", price: 55, image: "img/ft.jpg"},
+    {id: 9, name: "Drone with Camera", price: 250, image: "img/dronec.jpg"},
+    {id: 10, name: "Laptop Stand", price: 35, image: "img/lapstand.jpg"},
+    {id: 11, name: "USB-C Hub", price: 40, image: "img/usb.jpg"},
+    {id: 12, name: "Smart Home Hub", price: 130, image: "img/hometab.jpg"},
+    {id: 13, name: "Wireless Charger", price: 25, image: "img/wirelesscharger.jpg"},
+    {id: 14, name: "Noise Cancelling Earbuds", price: 85, image: "img/earbuds.jpg"},
+    {id: 15, name: "Action Camera", price: 170, image: "img/actioncamera.jpg"},
+    {id: 16, name: "Portable Projector", price: 220, image: "img/portableprojector.jpg"}
+  ];
+
+  // State
+  let cart = [];
+
+  // DOM Elements
+  const productList = document.getElementById('productList');
+  const cartBtn = document.getElementById('cartBtn');
+  const cartCount = document.getElementById('cartCount');
+  const cartModal = document.getElementById('cartModal');
+  const cartItems = document.getElementById('cartItems');
+  const cartTotal = document.getElementById('cartTotal');
+  const cartCloseBtn = cartModal.querySelector('.close');
+  const checkoutBtn = document.getElementById('checkoutBtn');
+  const checkoutModal = document.getElementById('checkoutModal');
+  const checkoutCloseBtn = checkoutModal.querySelector('.close');
+  const checkoutForm = document.getElementById('checkoutForm');
+
+  // Navigation links and sections
+  const navLinks = document.querySelectorAll('.nav-link');
+  const sections = document.querySelectorAll('main > section');
+  const heroShopBtn = document.querySelector('.hero .button');
+
+  // Render products
+  function renderProducts() {
+    productList.innerHTML = '';
+    products.forEach(prod => {
+      const div = document.createElement('div');
+      div.className = 'product';
+      div.innerHTML = `
+        <img src="${prod.image}" alt="${prod.name}" loading="lazy" />
+        <h3>${prod.name}</h3>
+        <p>$${prod.price.toFixed(2)}</p>
+        <button data-id="${prod.id}">Add to Cart</button>
+      `;
+      productList.appendChild(div);
+    });
+  }
+
+  // Update cart count in navbar
+  function updateCartCount() {
+    const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
+    cartCount.textContent = totalQty;
+  }
+
+  // Open cart modal and update cart display
+  function openCart() {
+    updateCartDisplay();
+    cartModal.style.display = 'flex';
+  }
+
+  // Close modals helper
+  function closeModal(modal) {
+    modal.style.display = 'none';
+  }
+
+  // Update cart modal content
+  function updateCartDisplay() {
+    cartItems.innerHTML = '';
+    if(cart.length === 0){
+      cartItems.innerHTML = '<li>Your cart is empty.</li>';
+      cartTotal.textContent = '';
+      checkoutBtn.style.display = 'none';
+      return;
+    }
+    checkoutBtn.style.display = 'block';
+
+    let total = 0;
+    cart.forEach(item => {
+      const prod = products.find(p => p.id === item.id);
+      const li = document.createElement('li');
+      const itemTotal = prod.price * item.qty;
+      total += itemTotal;
+      li.innerHTML = `
+        <span>${prod.name} (x${item.qty})</span>
+        <span>
+          $${itemTotal.toFixed(2)} 
+          <button data-id="${item.id}">Remove</button>
+        </span>
+      `;
+      cartItems.appendChild(li);
+    });
+    cartTotal.textContent = `Total: $${total.toFixed(2)}`;
+  }
+
+  // Add product to cart or increment qty
+  function addToCart(id) {
+    const existing = cart.find(item => item.id === id);
+    if(existing){
+      existing.qty++;
+    } else {
+      cart.push({id, qty:1});
+    }
+    updateCartCount();
+  }
+
+  // Remove product from cart or decrement qty
+  function removeFromCart(id) {
+    const index = cart.findIndex(item => item.id === id);
+    if(index > -1){
+      if(cart[index].qty > 1){
+        cart[index].qty--;
+      } else {
+        cart.splice(index, 1);
+      }
+      updateCartCount();
+    }
+  }
+
+  // Switch main sections
+  function switchSection(sectionId) {
+    sections.forEach(sec => {
+      sec.classList.toggle('active', sec.id === sectionId);
+    });
+    navLinks.forEach(link => {
+      link.classList.toggle('active', link.dataset.section === sectionId);
+    });
+  }
+
+  // Event Listeners
+  productList.addEventListener('click', e => {
+    if(e.target.tagName === 'BUTTON'){
+      const id = Number(e.target.dataset.id);
+      addToCart(id);
+    }
+  });
+
+  cartBtn.addEventListener('click', () => {
+    openCart();
+  });
+
+  cartCloseBtn.addEventListener('click', () => {
+    closeModal(cartModal);
+  });
+
+  cartItems.addEventListener('click', e => {
+    if(e.target.tagName === 'BUTTON'){
+      const id = Number(e.target.dataset.id);
+      removeFromCart(id);
+      updateCartDisplay();
+    }
+  });
+
+  checkoutBtn.addEventListener('click', () => {
+    closeModal(cartModal);
+    checkoutModal.style.display = 'flex';
+  });
+
+  checkoutCloseBtn.addEventListener('click', () => {
+    closeModal(checkoutModal);
+  });
+
+  checkoutForm.addEventListener('submit', e => {
+    e.preventDefault();
+    alert('Order placed successfully!\nThank you for shopping with ProShop.');
+    cart = [];
+    updateCartCount();
+    closeModal(checkoutModal);
+    switchSection('home');
+  });
+
+  navLinks.forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      const targetSection = e.target.dataset.section;
+      switchSection(targetSection);
+    });
+  });
+
+  heroShopBtn.addEventListener('click', () => {
+    switchSection('products');
+  });
+
+  // Contact form submission handler
+  const contactForm = document.getElementById('contactForm');
+  contactForm.addEventListener('submit', e => {
+    e.preventDefault();
+    alert(`Thank you, ${contactForm.contactName.value}, for reaching out! We will get back to you soon.`);
+    contactForm.reset();
+  });
+
+  // Initial render
+  renderProducts();
+  updateCartCount();
+
+  // Close modals on clicking outside content
+  window.addEventListener('click', e => {
+    if(e.target === cartModal){
+      closeModal(cartModal);
+    }
+    if(e.target === checkoutModal){
+      closeModal(checkoutModal);
+    }
+  });
+</script>
+
+</body>
+</html>
+
